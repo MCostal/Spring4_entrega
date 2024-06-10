@@ -76,14 +76,12 @@ IGNORE 1 ROWS;
 
 SELECT * FROM credit_card;
 
--- Una vez acabado el ejercicio, paso a cambiar los formatos de date de string a fecha.
+-- Una vez acabado el ejercicio, paso a cambiar los formatos de los campos de fecha 
+-- de string a date.
 
-ALTER TABLE credit_card RENAME COLUMN expiring_date to expiring_date_str;
-DESC credit_card;
-ALTER TABLE credit_card ADD COLUMN expiring_date date;
-UPDATE credit_card 
-SET expiring_date = STR_TO_DATE(expiring_date_str, '%m/%d/%Y');
-ALTER TABLE credit_card DROP COLUMN expiring_date_str;
+UPDATE credit_card
+SET expiring_date = STR_TO_DATE(expiring_date, '%m/%d/%Y');
+
 
 
 -- Creamos la tabla users
@@ -99,6 +97,7 @@ CREATE TABLE IF NOT EXISTS users (
         postal_code VARCHAR(12),
         address VARCHAR(120)
 );
+
 
 -- Cargamos los datos del csv
 -- Cargamos archivo users_usa.csv
@@ -124,16 +123,16 @@ ENCLOSED BY '"'
 LINES TERMINATED BY '\r\n'
 IGNORE 1 ROWS;
 
--- Una vez acabado el ejercicio, paso a cambiar los formatos de date de string a fecha.
-ALTER TABLE users RENAME COLUMN birth_date to birth_date_str;
-ALTER TABLE users ADD COLUMN birth_date date;
+-- Una vez acabado el ejercicio, paso a cambiar los formatos de fecha 
+-- de string a date. En este caso particular, tenemos dos formatos diferentes para los valores 
+-- de fecha, que debemos modificar por separado.
+
 UPDATE users
 SET birth_date = 
-CASE WHEN birth_date_str REGEXP '^[A-Za-z]{3} [0-9]{1,2}, [0-9]{4}$' 
-		THEN STR_TO_DATE(birth_date_str, '%b %e, %Y')
-        ELSE STR_TO_DATE(birth_date_str, '%m/%d/%Y') 
+CASE WHEN birth_date REGEXP '^[A-Za-z]{3} [0-9]{1,2}, [0-9]{4}$' 
+		THEN STR_TO_DATE(birth_date, '%b %e, %Y')
+        ELSE STR_TO_DATE(birth_date, '%m/%d/%Y') 
 	END;
-ALTER TABLE users DROP COLUMN birth_date_str;
 
 
 
@@ -310,7 +309,7 @@ ON NumIds >= n.digit;
 
 -- Acontinuación una segunda manera de obtener la tabla, pero menos dinámica.
 
-CREATE TABLE tiquets
+-- CREATE TABLE tiquets
 SELECT id, SUBSTRING_INDEX(product_ids, ', ', 1) AS product
 FROM tiquets_juntos
 UNION

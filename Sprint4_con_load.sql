@@ -4,8 +4,8 @@
 
 -- Primer paso es crear un database.
 
-CREATE DATABASE IF NOT EXISTS operaciones;
-USE operaciones;
+CREATE DATABASE IF NOT EXISTS operaciones2;
+USE operaciones2;
 
 -- Segundo paso es crear las tablas de dimensiones que formaran nuestro modelo.
 
@@ -184,17 +184,17 @@ FROM users
 JOIN transactions
 ON users.id = transactions.user_id
 GROUP BY users.id
-HAVING count(transactions.id)>30;
+HAVING numTrans>30;
 
 
-SELECT users.id, users.name, users.surname, countmas30.numeroTrans
+SELECT users.id, users.name, users.surname
 FROM users 
-JOIN (SELECT user_id, count(id) as numeroTrans
-		FROM transactions
-		GROUP BY user_id
-        HAVING numeroTrans>30) as countmas30
-ON users.id = countmas30.user_id;
+WHERE users.id in (SELECT user_id 
+					FROM transactions
+					GROUP BY user_id
+					HAVING count(id)>30);
 
+SELECT * FROM transactions;
 
 
 
@@ -219,7 +219,7 @@ GROUP BY companies.company_id, companies.company_name, credit_card.iban;
 -- Crea una nueva tabla que refleje el estado de las tarjetas de crédito basado en si las últimas 
 -- tres transacciones fueron declinadas, y genera la siguiente consulta:
 
-CREATE TABLE estado_tarjeta
+-- CREATE TABLE estado_tarjeta
 SELECT card_id, CASE WHEN sum(declined)<3 THEN 'ACTIVA'
 					ELSE 'NO ACTIVA'	
 				END as estado_tarjeta
@@ -320,7 +320,7 @@ SELECT id, SUBSTRING_INDEX(SUBSTRING_INDEX(product_ids, ', ', 3), ',',-1) AS pro
 FROM tiquets_juntos
 UNION
 SELECT id, SUBSTRING_INDEX(SUBSTRING_INDEX(product_ids, ', ', 4), ',',-1) AS product
-FROM tiquets_juntos;
+FROM tiquets_juntos
 
 
 -- Modificamos el tipo de dato de product, de VARCHAR a INTEGER.

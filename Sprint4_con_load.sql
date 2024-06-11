@@ -313,9 +313,6 @@ ON NumIds >= n.digit;
 SELECT id, SUBSTRING_INDEX(product_ids, ', ', 1) AS product
 FROM tiquets_juntos
 UNION
-SELECT id, SUBSTRING_INDEX(SUBSTRING_INDEX(product_ids, ', ', 1), ',',-1) AS product
-FROM tiquets_juntos
-UNION
 SELECT id, SUBSTRING_INDEX(SUBSTRING_INDEX(product_ids, ', ', 2), ',',-1) AS product
 FROM tiquets_juntos
 UNION
